@@ -34,13 +34,15 @@ public class TaskStore {
         return result;
     }
 
-    public List<Task> findDone() {
+    public List<Task> findDoneOrNew(boolean flag) {
         Session session = sf.openSession();
         List<Task> result = new ArrayList<>();
         try {
             session.beginTransaction();
             result = session.createQuery(
-                    "from Task as i where i.done = true", Task.class).list();
+                    "from Task as i where i.done = :fDone", Task.class)
+                    .setParameter("fDone", flag)
+                    .list();
             session.getTransaction().commit();
         } catch (Exception e) {
             session.getTransaction().rollback();
@@ -50,35 +52,21 @@ public class TaskStore {
         return result;
     }
 
-    public List<Task> findNew() {
-        Session session = sf.openSession();
-        List<Task> result = new ArrayList<>();
-        try {
-            session.beginTransaction();
-            result = session.createQuery(
-                    "from Task as i where i.done = false", Task.class).list();
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            session.getTransaction().rollback();
-        } finally {
-            session.close();
-        }
-        return result;
-    }
-
-    public void save(Task task) {
-        task.setDone(false);
+    public boolean save(Task task) {
+        boolean rsl = false;
         task.setCreated(LocalDateTime.now());
         Session session = sf.openSession();
         try {
             session.beginTransaction();
             session.save(task);
             session.getTransaction().commit();
+            rsl = true;
         } catch (Exception e) {
             session.getTransaction().rollback();
         } finally {
             session.close();
         }
+        return rsl;
    }
 
     public Optional<Task> findById(int id) {
@@ -96,13 +84,9 @@ public class TaskStore {
         return result;
     }
 
-    public void complete(int id) {
+    public boolean complete(int id) {
+        boolean rsl = false;
         Session session = sf.openSession();
-        Optional<Task> taskOptional = findById(id);
-        if (taskOptional.isEmpty()) {
-            session.close();
-            throw new NoSuchElementException("Task with this id is not found");
-        }
         try {
             session.beginTransaction();
             session.createQuery(
@@ -111,38 +95,38 @@ public class TaskStore {
                     .setParameter("fId", id)
                     .executeUpdate();
             session.getTransaction().commit();
+            rsl = true;
         } catch (Exception e) {
             session.getTransaction().rollback();
         } finally {
             session.close();
         }
+        return rsl;
     }
 
-    public void update(Task task) {
+    public boolean update(Task task) {
+        boolean rsl = false;
         Session session = sf.openSession();
-        Optional<Task> taskOptional = findById(task.getId());
-        if (taskOptional.isEmpty()) {
-            session.close();
-            throw new NoSuchElementException("This Task is not found");
-        }
-        int id = taskOptional.get().getId();
-        System.out.println(task);
+        int id = findById(task.getId()).get().getId();
         try {
             session.beginTransaction();
             session.createQuery(
-                            "UPDATE Task SET description = :fdescription WHERE id = :fId")
-                    .setParameter("fdescription", task.getDescription())
+                            "UPDATE Task SET description = :fDescription WHERE id = :fId")
+                    .setParameter("fDescription", task.getDescription())
                     .setParameter("fId", id)
                     .executeUpdate();
             session.getTransaction().commit();
+            rsl = true;
         } catch (Exception e) {
             session.getTransaction().rollback();
         } finally {
             session.close();
         }
+        return rsl;
     }
 
-    public void delete(int id) {
+    public boolean delete(int id) {
+        boolean rsl = false;
         Session session = sf.openSession();
         try {
             session.beginTransaction();
@@ -151,11 +135,13 @@ public class TaskStore {
                     .setParameter("fId", id)
                     .executeUpdate();
             session.getTransaction().commit();
+            rsl = true;
         } catch (Exception e) {
             session.getTransaction().rollback();
         } finally {
             session.close();
         }
+        return rsl;
     }
 }
 

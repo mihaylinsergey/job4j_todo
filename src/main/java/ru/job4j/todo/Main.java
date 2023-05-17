@@ -10,15 +10,8 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class Main {
 
-    @Bean(destroyMethod = "close")
-    public SessionFactory sf() {
-        final StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
-                .configure().build();
-        return new MetadataSources(registry).buildMetadata().buildSessionFactory();
-    }
-
     public static void main(String[] args) {
         SpringApplication.run(Main.class, args);
-        System.out.println("Go to http://localhost:8080/index");
+        System.out.println("Go to http://localhost:8080/tasks/index");
     }
 }

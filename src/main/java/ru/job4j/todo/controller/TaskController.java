@@ -9,6 +9,7 @@ import ru.job4j.todo.service.TaskService;
 
 @ThreadSafe
 @Controller
+@RequestMapping("/tasks")
 public class TaskController {
     private final TaskService taskService;
 
@@ -19,59 +20,81 @@ public class TaskController {
     @GetMapping("/index")
     public String getTasks(Model model) {
         model.addAttribute("tasks", taskService.findAll());
-        return "/index";
+        return "/tasks/index";
     }
 
     @GetMapping("/done")
     public String getDoneTasks(Model model) {
-        model.addAttribute("doneTasks", taskService.findDone());
-        return "/done";
+        model.addAttribute("doneTasks", taskService.findDoneOrNew(true));
+        return "/tasks/done";
     }
 
     @GetMapping("/new")
     public String getNewTasks(Model model) {
-        model.addAttribute("newTasks", taskService.findNew());
-        return "/new";
+        model.addAttribute("newTasks", taskService.findDoneOrNew(false));
+        return "/tasks/new";
     }
 
     @GetMapping("/create")
     public String getCreateView() {
-        return "/create";
+        return "/tasks/create";
     }
 
     @PostMapping("/createTask")
-    public String createTask(@ModelAttribute Task task) {
-        taskService.save(task);
-        return "redirect:/index";
+    public String createTask(@ModelAttribute Task task, Model model) {
+        if (!taskService.save(task)) {
+            model.addAttribute("message", "Задача не сохранена, попробуйте еще раз!");
+            return "errors/404";
+        }
+        return "redirect:/tasks/index";
     }
 
     @GetMapping("/{id}")
     public String getById(Model model, @PathVariable int id) {
-        model.addAttribute("task", taskService.findById(id).get());
-        return "/task";
+        var taskServiceOptional = taskService.findById(id);
+        if (taskServiceOptional.isEmpty()) {
+            model.addAttribute("message", "Задача не найдена, попробуйте еще раз!");
+            return "errors/404";
+        }
+        model.addAttribute("task", taskServiceOptional.get());
+        return "/tasks/task";
     }
 
     @GetMapping("/complete/{id}")
-    public String completeTask(@PathVariable int id) {
-        taskService.complete(id);
-        return "redirect:/index";
+    public String completeTask(@PathVariable int id, Model model) {
+        if (!taskService.complete(id)) {
+            model.addAttribute("message", "Задача не отмечена исполненной, попробуйте еще раз!");
+            return "errors/404";
+        }
+        return "redirect:/tasks/index";
     }
 
     @PostMapping("/updateView")
     public String updateView(@ModelAttribute Task task, Model model) {
-        model.addAttribute("task", taskService.findById(task.getId()).get());
-        return "update";
+        var taskServiceOptional = taskService.findById(task.getId());
+        if (taskServiceOptional.isEmpty()) {
+            model.addAttribute("message", "Задача не найдена, попробуйте еще раз!");
+            return "errors/404";
+        }
+        model.addAttribute("task", taskServiceOptional.get());
+        return "/tasks/update";
     }
 
     @PostMapping("/update")
-    public String updateTask(@ModelAttribute Task task) {
-        taskService.update(task);
-        return "redirect:/index";
+    public String updateTask(@ModelAttribute Task task, Model model) {
+        if (!taskService.update(task)) {
+            model.addAttribute("message", "Задача не обновлена, попробуйте еще раз!");
+            return "errors/404";
+        }
+        return "redirect:/tasks/index";
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteTask(@PathVariable int id) {
-        taskService.delete(id);
-        return "redirect:/index";
+    public String deleteTask(@PathVariable int id, Model model) {
+        if (!taskService.delete(id)) {
+            model.addAttribute("message", "Задача не удалена, попробуйте еще раз!");
+            return "errors/404";
+        }
+        return "redirect:/tasks/index";
     }
 }

@@ -21,31 +21,27 @@ public class TaskService {
         return taskStore.findAll();
     }
 
-    public List<Task> findDone() {
-        return taskStore.findDone();
+    public List<Task> findDoneOrNew(boolean flag) {
+        return taskStore.findDoneOrNew(flag);
     }
 
-    public List<Task> findNew() {
-        return taskStore.findNew();
-    }
-
-    public void save(Task task) {
-        taskStore.save(task);
+    public boolean save(Task task) {
+       return taskStore.save(task);
     }
 
     public Optional<Task> findById(int id) {
         return taskStore.findById(id);
     }
 
-    public void complete(int id) {
-        taskStore.complete(id);
+    public boolean complete(int id) {
+        return taskStore.complete(id);
     }
 
-    public void update(Task task) {
-        taskStore.update(task);
+    public boolean update(Task task) {
+        return taskStore.update(task);
     }
 
-    public void delete(int id) {
-        taskStore.delete(id);
+    public boolean delete(int id) {
+        return taskStore.delete(id);
     }
 }
