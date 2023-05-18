@@ -6,11 +6,9 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 import ru.job4j.todo.model.Task;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @ThreadSafe
@@ -107,13 +105,12 @@ public class TaskStore {
     public boolean update(Task task) {
         boolean rsl = false;
         Session session = sf.openSession();
-        int id = findById(task.getId()).get().getId();
         try {
             session.beginTransaction();
             session.createQuery(
                             "UPDATE Task SET description = :fDescription WHERE id = :fId")
                     .setParameter("fDescription", task.getDescription())
-                    .setParameter("fId", id)
+                    .setParameter("fId", task.getId())
                     .executeUpdate();
             session.getTransaction().commit();
             rsl = true;
