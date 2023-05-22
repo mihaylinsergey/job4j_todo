@@ -24,16 +24,12 @@ public class UserController {
 
     @PostMapping("/register")
     public String register(@ModelAttribute User user, Model model) {
-        String rsl;
-        try {
-            userService.save(user);
-            rsl = "redirect:/tasks/index";
-        } catch (Exception exception) {
-            model.addAttribute("message", "Пользователь с login "
+        if (!userService.save(user)) {
+            model.addAttribute("error", "Пользователь с login "
                     + user.getLogin() + " уже существует");
-            rsl = "errors/404";
+            return "users/registration";
         }
-        return rsl;
+        return "redirect:/tasks/index";
     }
 
     @GetMapping("/login")
