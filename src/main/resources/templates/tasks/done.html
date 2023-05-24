@@ -50,6 +50,7 @@
                 <tr th:each="doneTask: ${doneTasks}">
                     <td th:text="${doneTask.id}"/>
                     <td><a th:text="${doneTask.description}" th:href="@{/tasks/{id}(id=${doneTask.id})}"></a></td>
+                    <td th:text="${doneTask.user.getName}"/>
                     <td th:text="${#temporals.format(doneTask.created, 'dd-MM-yyyy HH:mm')}" />
                 </tr>
                 </tbody>

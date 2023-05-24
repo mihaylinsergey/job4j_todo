@@ -25,4 +25,9 @@ public class Task {
    @Getter
    @Setter
    private boolean done;
+   @ManyToOne
+   @JoinColumn(name = "user_id")
+   @Getter
+   @Setter
+   private User user;
 }
