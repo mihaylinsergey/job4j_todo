@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.todo.model.Task;
+import ru.job4j.todo.model.User;
 import ru.job4j.todo.service.TaskService;
 
 @ThreadSafe
@@ -41,7 +42,8 @@ public class TaskController {
     }
 
     @PostMapping("/createTask")
-    public String createTask(@ModelAttribute Task task, Model model) {
+    public String createTask(@ModelAttribute Task task, @SessionAttribute User user, Model model) {
+        task.setUser(user);
         if (!taskService.save(task)) {
             model.addAttribute("message", "Задача не сохранена, попробуйте еще раз!");
             return "errors/404";
