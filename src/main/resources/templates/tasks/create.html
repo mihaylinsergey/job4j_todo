@@ -39,11 +39,18 @@
     <div class="row pt-3">
         <div class="card" style="width: 100%">
             <div class="card-body">
-                <form th:action="@{/tasks/createTask}" method="POST" enctype="multipart/form-data">
+                <form th:action="@{/tasks/createTask}" method="POST">
                     <input type="hidden" name="id" value="0"/>
                     <div class="form-group">
                         <label for="description">Описание задачи</label>
                         <input type="text" class="form-control" name="description" id="description">
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Приоритет</label>
+                        <select class="form-control" id="name" name="name" th:object="${priorities}">
+                            <option th:each="priority: ${priorities}" th:value="${priority.name}" th:text="${priority.name}">
+                            </option>
+                        </select>
                     </div>
                     <button type="submit" class="btn btn-primary mt-3">Сохранить</button>
                 </form>

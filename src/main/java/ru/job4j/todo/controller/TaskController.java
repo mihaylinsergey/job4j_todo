@@ -1,22 +1,24 @@
 package ru.job4j.todo.controller;
 
+import lombok.AllArgsConstructor;
 import net.jcip.annotations.ThreadSafe;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import ru.job4j.todo.model.Priority;
 import ru.job4j.todo.model.Task;
 import ru.job4j.todo.model.User;
+import ru.job4j.todo.service.PriorityService;
 import ru.job4j.todo.service.TaskService;
 
 @ThreadSafe
 @Controller
+@AllArgsConstructor
 @RequestMapping("/tasks")
 public class TaskController {
     private final TaskService taskService;
 
-    public TaskController(TaskService taskService) {
-        this.taskService = taskService;
-    }
+    private final PriorityService priorityService;
 
     @GetMapping("/index")
     public String getTasks(Model model) {
@@ -37,13 +39,16 @@ public class TaskController {
     }
 
     @GetMapping("/create")
-    public String getCreateView() {
+    public String getCreateView(Model model) {
+        model.addAttribute("priorities", priorityService.findAll());
         return "/tasks/create";
     }
 
     @PostMapping("/createTask")
-    public String createTask(@ModelAttribute Task task, @SessionAttribute User user, Model model) {
+    public String createTask(@ModelAttribute Task task, @SessionAttribute User user,
+                             @ModelAttribute Priority priority, Model model) {
         task.setUser(user);
+        task.setPriority(priorityService.findByName(priority.getName()).get(0));
         if (!taskService.save(task)) {
             model.addAttribute("message", "Задача не сохранена, попробуйте еще раз!");
             return "errors/404";

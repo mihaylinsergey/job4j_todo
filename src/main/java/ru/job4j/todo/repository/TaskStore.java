@@ -17,11 +17,11 @@ public class TaskStore {
     private final CrudRepository crudRepository;
 
     public List<Task> findAll() {
-        return crudRepository.query("from Task ORDER BY id", Task.class);
+        return crudRepository.query("from Task i JOIN FETCH i.priority ORDER BY i.id", Task.class);
     }
 
     public List<Task> findDoneOrNew(boolean flag) {
-        return crudRepository.query("from Task as i where i.done = :fDone",
+        return crudRepository.query("from Task as i JOIN FETCH i.priority where i.done = :fDone",
                 Task.class, Map.of("fDone", flag));
     }
 
