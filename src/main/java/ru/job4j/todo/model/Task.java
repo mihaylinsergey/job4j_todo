@@ -3,6 +3,8 @@ package ru.job4j.todo.model;
 import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "tasks")
@@ -35,4 +37,13 @@ public class Task {
    @Getter
    @Setter
    private Priority priority;
+   @ManyToMany
+   @JoinTable(
+           name = "tasks_categories",
+           joinColumns = {@JoinColumn(name = "task_id")},
+           inverseJoinColumns = {@JoinColumn(name = "category_id")}
+   )
+   @Getter
+   @Setter
+   private List<Category> categories = new ArrayList<>();
 }

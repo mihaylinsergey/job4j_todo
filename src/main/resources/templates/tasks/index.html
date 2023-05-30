@@ -48,6 +48,7 @@
                     <th scope="col">Задача</th>
                     <th scope="col">Пользователь</th>
                     <th scope="col">Приоритет</th>
+                    <th scope="col">Категория</th>
                     <th scope="col">Время создания</th>
                     <th scope="col">Состояние</th>
                 </tr>
@@ -58,6 +59,11 @@
                     <td><a th:text="${task.description}" th:href="@{/tasks/{id}(id=${task.id})}"></a></td>
                     <td th:text="${task.user.getName}"/>
                     <td th:text="${task.priority.getPosition}"/>
+                    <td>
+                        <th:block th:each="category: ${task.getCategories}">
+                            <span th:text="${category.name}"></span>
+                        </th:block>
+                    </td>
                     <td th:text="${#temporals.format(task.created, 'dd-MM-yyyy HH:mm')}" />
                     <td>
                     <div th:switch="${task.done}">

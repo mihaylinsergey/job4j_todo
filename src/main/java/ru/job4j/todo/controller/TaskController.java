@@ -5,11 +5,18 @@ import net.jcip.annotations.ThreadSafe;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import ru.job4j.todo.model.Category;
 import ru.job4j.todo.model.Priority;
 import ru.job4j.todo.model.Task;
 import ru.job4j.todo.model.User;
+import ru.job4j.todo.service.CategoryService;
 import ru.job4j.todo.service.PriorityService;
 import ru.job4j.todo.service.TaskService;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.lang.Integer.parseInt;
 
 @ThreadSafe
 @Controller
@@ -19,6 +26,8 @@ public class TaskController {
     private final TaskService taskService;
 
     private final PriorityService priorityService;
+
+    private final CategoryService categoryService;
 
     @GetMapping("/index")
     public String getTasks(Model model) {
@@ -40,15 +49,18 @@ public class TaskController {
 
     @GetMapping("/create")
     public String getCreateView(Model model) {
-        model.addAttribute("priorities", priorityService.findAll());
+        model.addAttribute("priorities", priorityService.findAll())
+                .addAttribute("categories", categoryService.findAll());
         return "/tasks/create";
     }
 
     @PostMapping("/createTask")
     public String createTask(@ModelAttribute Task task, @SessionAttribute User user,
-                             @ModelAttribute Priority priority, Model model) {
+                             @ModelAttribute Priority priority, @RequestParam List<String> listId,
+                             Model model) {
         task.setUser(user);
         task.setPriority(priorityService.findByName(priority.getName()).get(0));
+        task.setCategories(getCategoriesFromListId(listId));
         if (!taskService.save(task)) {
             model.addAttribute("message", "Задача не сохранена, попробуйте еще раз!");
             return "errors/404";
@@ -103,5 +115,12 @@ public class TaskController {
             return "errors/404";
         }
         return "redirect:/tasks/index";
+    }
+
+    public List<Category> getCategoriesFromListId(List<String> listId) {
+        return listId
+                .stream()
+                .map(x -> categoryService.findById(parseInt(x)).get(0))
+                .collect(Collectors.toList());
     }
 }
