@@ -21,4 +21,8 @@ public class CategoryService {
     public List<Category> findById(int id) {
         return categoryStore.findById(id);
     }
+
+    public List<Category> findByLislId(List<Integer> listId) {
+        return categoryStore.findByLislId(listId);
+    }
 }

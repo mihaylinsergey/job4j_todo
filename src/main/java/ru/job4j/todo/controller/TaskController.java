@@ -60,7 +60,11 @@ public class TaskController {
                              Model model) {
         task.setUser(user);
         task.setPriority(priorityService.findByName(priority.getName()).get(0));
-        task.setCategories(getCategoriesFromListId(listId));
+        var listFromStringToInt = listId
+                .stream()
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+        task.setCategories(categoryService.findByLislId(listFromStringToInt));
         if (!taskService.save(task)) {
             model.addAttribute("message", "Задача не сохранена, попробуйте еще раз!");
             return "errors/404";
@@ -115,12 +119,5 @@ public class TaskController {
             return "errors/404";
         }
         return "redirect:/tasks/index";
-    }
-
-    public List<Category> getCategoriesFromListId(List<String> listId) {
-        return listId
-                .stream()
-                .map(x -> categoryService.findById(parseInt(x)).get(0))
-                .collect(Collectors.toList());
     }
 }

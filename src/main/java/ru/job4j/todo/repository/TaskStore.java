@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import net.jcip.annotations.ThreadSafe;
 import org.springframework.stereotype.Repository;
 import ru.job4j.todo.model.Task;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;

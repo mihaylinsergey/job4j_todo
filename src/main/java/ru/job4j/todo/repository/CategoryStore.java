@@ -22,4 +22,9 @@ public class CategoryStore {
         return crudRepository.query("from Category as i where i.id = :fId",
                 Category.class, Map.of("fId", id));
     }
+
+    public List<Category> findByLislId(List<Integer> listId) {
+        return crudRepository.query("from Category as i where i.id IN :fId",
+                Category.class, Map.of("fId", listId));
+    }
 }
