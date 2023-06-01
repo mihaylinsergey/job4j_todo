@@ -28,6 +28,10 @@ public class User {
     @Setter
     @EqualsAndHashCode.Include
     private String password;
+    @Getter
+    @Setter
+    @Column(name = "user_zone")
+    private String timeZone;
 
     public User() {
     }
@@ -35,5 +39,11 @@ public class User {
     public User(int id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public User(int id, String login, String timeZone) {
+        this.id = id;
+        this.login = login;
+        this.timeZone = timeZone;
     }
 }

@@ -60,12 +60,12 @@
                     <td th:text="${task.user.getName}"/>
                     <td th:text="${task.priority.getPosition}"/>
                     <td>
-                        <p <th:block th:each="category: ${task.getCategories}">
+                        <p> <th:block th:each="category: ${task.getCategories}">
                             <span th:text="${category.name}"></span>
                         </th:block>
                         </p>
                     </td>
-                    <td th:text="${#temporals.format(task.created, 'dd-MM-yyyy HH:mm')}" />
+                    <td th:text="${#temporals.format(task.created.atZone(timeZone).withZoneSameInstant(timeZone), 'dd-MM-yyyy HH:mm')}" />
                     <td>
                     <div th:switch="${task.done}">
                         <p th:case="true">Выполнено</p>

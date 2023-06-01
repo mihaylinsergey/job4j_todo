@@ -9,6 +9,7 @@ import ru.job4j.todo.model.User;
 import ru.job4j.todo.service.UserService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.TimeZone;
 
 @ThreadSafe
 @Controller
@@ -18,12 +19,16 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/register")
-    public String getRegistrationPage() {
+    public String getRegistrationPage(Model model) {
+        model.addAttribute("timeZones", userService.getAllTimeZones());
         return "/users/registration";
     }
 
     @PostMapping("/register")
     public String register(@ModelAttribute User user, Model model) {
+        if (user.getTimeZone().isEmpty()) {
+            user.setTimeZone(TimeZone.getDefault().getID());
+        }
         if (!userService.save(user)) {
             model.addAttribute("error", "Пользователь с login "
                     + user.getLogin() + " уже существует");

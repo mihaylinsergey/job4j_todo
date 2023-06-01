@@ -27,7 +27,6 @@ public class TaskStore {
     }
 
     public boolean save(Task task) {
-        task.setCreated(LocalDateTime.now());
         return crudRepository.run(session -> session.persist(task));
    }
 

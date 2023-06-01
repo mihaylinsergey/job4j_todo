@@ -5,7 +5,6 @@ import net.jcip.annotations.ThreadSafe;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import ru.job4j.todo.model.Category;
 import ru.job4j.todo.model.Priority;
 import ru.job4j.todo.model.Task;
 import ru.job4j.todo.model.User;
@@ -13,6 +12,8 @@ import ru.job4j.todo.service.CategoryService;
 import ru.job4j.todo.service.PriorityService;
 import ru.job4j.todo.service.TaskService;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,8 +31,10 @@ public class TaskController {
     private final CategoryService categoryService;
 
     @GetMapping("/index")
-    public String getTasks(Model model) {
-        model.addAttribute("tasks", taskService.findAll());
+    public String getTasks(Model model, @SessionAttribute User user) {
+        model
+                .addAttribute("tasks", taskService.findAll())
+                .addAttribute("timeZone", ZoneId.of(user.getTimeZone()));
         return "/tasks/index";
     }
 
@@ -64,6 +67,7 @@ public class TaskController {
                 .stream()
                 .map(Integer::parseInt)
                 .collect(Collectors.toList());
+        task.setCreated(LocalDateTime.now(ZoneId.of(user.getTimeZone())));
         task.setCategories(categoryService.findByLislId(listFromStringToInt));
         if (!taskService.save(task)) {
             model.addAttribute("message", "Задача не сохранена, попробуйте еще раз!");

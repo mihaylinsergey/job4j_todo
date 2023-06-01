@@ -5,20 +5,29 @@ import net.jcip.annotations.ThreadSafe;
 import org.springframework.stereotype.Service;
 import ru.job4j.todo.model.User;
 import ru.job4j.todo.repository.UserStore;
-import java.util.Optional;
+
+import java.util.*;
 
 @ThreadSafe
 @Service
 @AllArgsConstructor
 public class UserService {
 
-    private final UserStore userTask;
+    private final UserStore userStore;
 
     public boolean save(User user) {
-        return userTask.save(user);
+        return userStore.save(user);
     }
 
     public Optional<User> findByLoginAndPassword(String login, String password) {
-        return userTask.findByLoginAndPassword(login, password);
+        return userStore.findByLoginAndPassword(login, password);
+    }
+
+    public Set<TimeZone> getAllTimeZones() {
+        var zones = new HashSet<TimeZone>();
+        for (String timeId : TimeZone.getAvailableIDs()) {
+            zones.add(TimeZone.getTimeZone(timeId));
+        }
+        return zones;
     }
 }
